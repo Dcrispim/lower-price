@@ -1,0 +1,9 @@
+LICENSE.txt
+README.md
+setup.cfg
+setup.py
+CleanCli.egg-info/PKG-INFO
+CleanCli.egg-info/SOURCES.txt
+CleanCli.egg-info/dependency_links.txt
+CleanCli.egg-info/top_level.txt
+Cli/__init__.py
