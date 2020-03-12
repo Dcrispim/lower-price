@@ -39,17 +39,43 @@ class Cotacao:
             if op.get_attribute('value') == _op:
                 op.click()
 
-    def get_coins(self):
+
+    def get_coins(self, index=0):
         select = self.driver.find_element_by_name('ChkMoeda')
-        options = select.find_elements_by_tag_name('option')
-        for option in options:
+        try:
+            option = select.find_elements_by_tag_name('option')[index]
             _code = option.get_attribute('value')
             _cache_coin = get_coin(_code)
-            if _cache_coin:
+            if _cache_coin and len(_cache_coin.keys())>=3:
                 self.coins[_code] = _cache_coin
             else:
-                self.coins[_code] = {'simbolo': None, 'name': option.text}
-                set_coin(_code, {'simbolo': None, 'name': option.text})
+                    
+                option.click()
+                self.submit()
+                text = self.driver.find_elements_by_tag_name('div')[0].text
+                
+                if 'Cotações de Fechamento' in text:
+                    parse_text = text.split('\n')[0].split(',')
+                    _name = parse_text[0].split('Cotações de Fechamento do')[-1].strip()
+                    _simbol = parse_text[2].split('Símbolo da Moeda:')[-1].strip()
+                    
+
+                    self.coins[_code] = {
+                            'name':_name,
+                            'simbolo':_simbol
+                        }
+                    
+                    self.driver.back()
+                    select = self.driver.find_element_by_name('ChkMoeda')
+                else:
+                    self.coins[_code] = {'simbolo': None, 'name': option.text}
+                    set_coin(_code, {'simbolo': None, 'name': option.text})
+            print(self.coins[_code])      
+            return self.get_coins(index=index+1)
+        except IndexError:
+            pass 
+    
+        
 
     def set_coin(self, value):
         select = Select(self.driver.find_element_by_name('ChkMoeda'))
@@ -126,7 +152,7 @@ class Cotacao:
         return self.driver.quit()
 
 options = Options()
-options.headless = True
+options.headless = False
 BCBApi = Cotacao(webdriver.Firefox(options=options))
 BCBApi.navigate()
 
