@@ -4,7 +4,7 @@ from selenium import webdriver
 from webscrap import BCBApi, Cotacao
 import requests
 from Cli import Cli
-from cache import cache_update, set_cache,get_cache
+from cache import cache_update, get_cache_prices
 
 try:
     BaseURL = 'https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/'
@@ -39,10 +39,13 @@ try:
     def get_prices(date):
         lower = {"simbolo":'x'}
         Min = 1000000
+        
         coins = BCBApi.make_dataset(date)
         for coin in coins.keys():
-            _price:dict = coins[coin]
-            if _price['paridadeCompra']<Min:
+            _price = coins[coin]
+            if type(_price)==str:
+                pass
+            elif _price['paridadeCompra']<Min:
                 lower.update(coins[coin])
                 Min =_price['paridadeCompra']
         
@@ -53,7 +56,7 @@ try:
         #- o símbolo da moeda com menor cotação,
         #- o nome do país de origem da moeda e
         #- o valor da cotação desta moeda frente ao dólar na data especificada
-        _price = get_prices(parse_date(date))
+        _price = get_prices(parse_date(date,'d/m/y'))
         try:
             flag=''
             dolar = get_price_dolar(parse_date(date,'m-d-y'))[0]['cotacaoVenda']
@@ -63,7 +66,7 @@ try:
         if len(_price.keys())<2:
             return _price['simbolo']
         else:
-            return f"{_price['simbolo']}, {_price['name']}, {_price['paridadeCompra']*dolar:0.2f} {flag}"
+            return f"{_price['simbolo']}, {_price['name']}, {_price['paridadeCompra']:0.2f} {flag}"
 
 
 
@@ -89,6 +92,7 @@ try:
             dates = [list_args[a] for a in list_args.keys() if type(a)==int]
             for a in dates:
                 if len(a)>=8:
+                    
                     print(parse_prices(a))
 
 
