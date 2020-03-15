@@ -1,6 +1,8 @@
-venv
-__pycache__
 .vscode
+__pycache__
+Dockerfile
+venv
 geckodriver.log
 __CACHE__.json
 *.test
+*.md

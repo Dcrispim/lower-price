@@ -1,8 +1,33 @@
+from crawler import close_browser
+from main import *
 import os
+
+__DIRNAME__ = os.sys.path[0]
+
 class Cli:
     def __init__(self):
         self._exclude = []
         self._args = {}
+
+    def cmd_loop(self, arg, list_args, **kwargs):
+        work = True
+        while work:
+            input_date = input(':> ')
+            if '-q' in input_date:
+                print('saindo...')
+                work = False
+            for date in input_date.split():
+                if len(date) >= 8:
+                    print(parse_prices(date))
+
+
+    def cmd_tests(self, arg, list_args={}, **kwargs):
+        os.system(f'python3 {os.path.join(__DIRNAME__,"tests.py")}')
+
+    def __default__(self, arg, list_args, **kargs):
+        dates = [list_args[a] for a in list_args.keys() if type(a) == int]
+        lower_price = [parse_prices(_price) for _price in dates if len(_price)>=8]
+        print('\n'.join(lower_price).strip('\n'))
 
     def parse_args(self, list_args:list):
         """get a list of args and convert do dict of all args and values
@@ -48,6 +73,8 @@ class Cli:
 
         return cmds
 
+    def cmd__reload_simbols(self, arg:any, list_args:dict, **kwargs)->None:
+        get_simbols()
         
     def run_commands(self, **kwargs)->None:
         _cmd = self.__get_cmds__()
@@ -57,15 +84,8 @@ class Cli:
                 _cmd[key](self._args[key], self._args, **kwargs)
                 
             except KeyError as k:
-                try:
-                    self.__default__(self._args[key], self._args, **kwargs)
+                self.__default__(self._args[key], self._args, **kwargs)
 
-                except KeyError as e:
-                    print(e)
-                    _key = str(k)
-                    print(
-                        f"Comando {_key if not _key.isdigit() else self._args[int(_key)]} não encontrado"
-                    )
             except TypeError as t:
                 if type(_cmd[key]) == bool:
                     pass
@@ -74,8 +94,12 @@ class Cli:
 
             return None
 
-        
+    
     def listen_os(self,**kwargs):
         self.parse_args(os.sys.argv[1:])
         self.run_commands(**kwargs)
-        
+
+try:
+    Cli().listen_os()
+finally:
+    BCBApi.close()
