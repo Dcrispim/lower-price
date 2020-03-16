@@ -71,12 +71,12 @@ Ou chamar os comandos abaixo:
 Chama um loop para melhor digitação contínua.para sar do loop basta digitar **-q**
 
 ``` 
-lower-price -loop
+$ lower-price -loop
 :> 20200308
 x
 :> 20200305
 VES, BOLIVAR SOBERANO VENEZUELANO, 0.00001361
-:> 20200216 2020031
+:> 20200216 2020030geckodriver.log1
 x
 x
 :> -q
@@ -127,22 +127,27 @@ Obs2: no caso do **-loop** todas as respostas serão salvas no caminho que foi e
 $ lower-price -loop -to resp.txt
 :>
 ```
+
+
 **--set-cache-time**
 Altera o tempo de vida do cache. O valor deve ser um inteiro ou um inteiro começando com a letra correspondente a unidade de tempo desejada. Note que caso não seja fornecida nenhuma unidade de mediada o valor fornecido será registrado como segundos
 
+``` 
 'D':DIA
 'M':MES
 'Y':ANO
 'h':hora
 'm':minuto
 's':segundo
+```
 
 pode ser passado tambem o parametro **-field** para especificar qual tabela alterar, caso não seja passado o campo "default" que será alterado.
+
 ``` 
 $ lower-price --set-cache-time D2 -field coins
 ```
-OBS: ps prefixos são case sensitve. 
 
+OBS: ps prefixos são case sensitve.
 
 Para utilizar a aplicação sem o containter basta chamar `python3 Cli.py <comandos>` 
 
@@ -173,7 +178,7 @@ Modulo principal de onde partem as solicitações e é feita a formataçã das d
 
 Por depender de um crawler para obter os dados um arquivo de cache é necessário mara melhor performace.por padrão o tempo de vida do cache é de 24h após esse.
 
-Todas informações de cache ficam armanenadas no arquivo `__CACHE__.json` , caso este não seja encontrado é criado. Ele é composto por três "tabelas" `expire`, `coins`, `prices`:
+Todas informações de cache ficam armanenadas no arquivo `__CACHE__.json` , caso este não seja encontrado é criado. Ele é composto por três "tabelas" `expire` , `coins` , `prices` :
 
 ``` json
 {
@@ -203,10 +208,11 @@ Todas informações de cache ficam armanenadas no arquivo `__CACHE__.json` , cas
     }
 }
 ```
-**expire**
-espefica quanto cata tabela tem de vida a data de validade(em timestamp) que cada tabela tem de vida. É atualizado automaticamente a cada fim de ciclo. os valores padroẽs podem ser alterados no arquivo `.cache.config`
 
-```json
+**expire**
+espefica quanto cata tabela tem de vida a data de validade(em timestamp) que cada tabela tem de vida.É atualizado automaticamente a cada fim de ciclo.os valores padroẽs podem ser alterados no arquivo `.cache.config` 
+
+``` json
 {
     "expire_time":{
         "default":86400,
@@ -216,18 +222,22 @@ espefica quanto cata tabela tem de vida a data de validade(em timestamp) que cad
     }
 }
 ```
+
 caso esteja null será pego o valor default, note que o tempo está em segundos para facilitar converções.
 
 **coins**
 Inicialmente como é executado o metodo **Browser.get_coins()** todas as moedas são salvas como
-```json
+
+``` json
 "1": {
     "simbolo": null,
     "name": "AFEGANE AFEGANIST"
     }
 ```
+
 após a execução do metodo  **Browser.get_simbols(date)** caso o simbolo da moeda seja encontrado é atualizado o `__CACHE__ .json` como o mesmo, caso contrário é resgistrado com "null"(em formato de string) para sinalizar que o mesmo foi procurado mas não foi encontrado evitando buscas desnecessárias.
-```json
+
+``` json
 "1": {
     "simbolo": "null",
     "name": "AFEGANE AFEGANIST"
@@ -236,7 +246,8 @@ após a execução do metodo  **Browser.get_simbols(date)** caso o simbolo da mo
 
 **prices**
 Contem as cotações das moedas nas respectivas datas. No caso de datas que não possuem boletim financeiro, recebem duas moedas "ERROR" e "USD".
-```json
+
+``` json
 "17052020": {
             "ERROR": {
                 "simbolo": "NULL",
@@ -257,3 +268,8 @@ Contem as cotações das moedas nas respectivas datas. No caso de datas que não
         },
 ```
 
+
+<hr>
+
+### Decorators
+Possui apenas o decorator `@feedback` para facilitar possiveis menssagens de erro 
