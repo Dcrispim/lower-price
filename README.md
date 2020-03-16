@@ -50,7 +50,7 @@ A aplicação consiste em 4 modulos principais `Cli` , `main` , `crawler` , e `c
 
 O modulo Cli foi feito para facilitar o gerenciamentos dos comandos e parametros passados.
 
-Pela linha de comando é possivel passar diretamente a(s) data(s) desejadas
+No terminal é possivel passar diretamente a(s) data(s) desejadas
 
 ``` 
 $ lower-price 20200310
@@ -68,7 +68,8 @@ VES, BOLIVAR SOBERANO VENEZUELANO, 0.00001367
 Ou chamar os comandos abaixo:
 
 **-loop**
-Chama um loop para melhor digitação contínua.para sar do loop basta digitar **-q**
+<p>
+Chama um loop para melhor digitação contínua.para sar do loop basta digitar  <b>-q</b>
 
 ``` 
 $ lower-price -loop
@@ -81,11 +82,14 @@ x
 x
 :> -q
 ```
+</p>
+
 
 **-from**
+<p>
 Utiliza as datas do arquivo especificado
 
-Obs: Passando o caminho sem a barra inicial será buscado o arquivo na pasta da aplicação
+_Obs: Passando o caminho sem a barra inicial será buscado o arquivo na pasta da aplicação_
 
 _dates.txt_
 
@@ -102,9 +106,15 @@ VES, BOLIVAR SOBERANO VENEZUELANO, 0.00001367
 VES, BOLIVAR SOBERANO VENEZUELANO, 0.00001362
 ```
 
+</p>
+
+
 **-to** 
+<p>
 Salva as respostas no arquivo especificado junto com a respectiva data
-Obs: Passando o caminho sem a barra inicial será buscado o arquivo na pasta da aplicação
+
+
+_Obs: Passando o caminho sem a barra inicial será buscado o arquivo na pasta da aplicação_
 
 ``` 
 $ lower-price -from dates.txt -to resp.txt
@@ -121,15 +131,20 @@ _resp.txt_
 20200214, VES, BOLIVAR SOBERANO VENEZUELANO, 0.00001362
 ```
 
-Obs2: no caso do **-loop** todas as respostas serão salvas no caminho que foi especificado no inicio do mesmo
+_Obs2: no caso do **-loop** todas as respostas serão salvas no caminho que foi especificado no inicio do mesmo_
 
 ``` 
 $ lower-price -loop -to resp.txt
 :>
 ```
 
+</p>
+
 
 **--set-cache-time**
+
+<p>
+
 Altera o tempo de vida do cache. O valor deve ser um inteiro ou um inteiro começando com a letra correspondente a unidade de tempo desejada. Note que caso não seja fornecida nenhuma unidade de mediada o valor fornecido será registrado como segundos
 
 ``` 
@@ -147,7 +162,9 @@ pode ser passado tambem o parametro **-field** para especificar qual tabela alte
 $ lower-price --set-cache-time D2 -field coins
 ```
 
-OBS: ps prefixos são case sensitve.
+_OBS: os prefixos são case sensitve._
+
+<p>
 
 Para utilizar a aplicação sem o containter basta chamar `python3 Cli.py <comandos>` 
 
@@ -172,11 +189,11 @@ e alem desses métodos há o **make_dataset(date)** *formato d/m/y* que simplesm
 
 ### main
 
-Modulo principal de onde partem as solicitações e é feita a formataçã das datas e das respostas solicitadas.
+Modulo principal de onde partem as solicitações e é feita a formatação das datas e das respostas solicitadas.
 
 ### cache
 
-Por depender de um crawler para obter os dados um arquivo de cache é necessário mara melhor performace.por padrão o tempo de vida do cache é de 24h após esse.
+Por depender de um crawler para obter os dados um arquivo de cache é necessário mara melhor performace. Por padrão o tempo de vida do cache é de 24h após esse.
 
 Todas informações de cache ficam armanenadas no arquivo `__CACHE__.json` , caso este não seja encontrado é criado. Ele é composto por três "tabelas" `expire` , `coins` , `prices` :
 
@@ -210,7 +227,7 @@ Todas informações de cache ficam armanenadas no arquivo `__CACHE__.json` , cas
 ```
 
 **expire**
-espefica quanto cata tabela tem de vida a data de validade(em timestamp) que cada tabela tem de vida.É atualizado automaticamente a cada fim de ciclo.os valores padroẽs podem ser alterados no arquivo `.cache.config` 
+espefica quanto cata tabela tem de vida a data de validade(em timestamp) que cada tabela tem de vida. É atualizado automaticamente a cada fim de ciclo e os valores de cada ciclo podem podem ser alterados no arquivo `.cache.config` 
 
 ``` json
 {
