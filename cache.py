@@ -115,3 +115,8 @@ def clear_table(table):
         __CACHE__[table].clear()
         with open(__path_cache__,'w') as _json_file:
             _json_file.write(json.dumps(__CACHE__))
+
+def set_time_expire(_time, field='default'):
+     _CONFIG_['expire_time'][field] = _time
+     with open(__path_cache_config__,'w') as _json_file:
+        _json_file.write(json.dumps(_CONFIG_))

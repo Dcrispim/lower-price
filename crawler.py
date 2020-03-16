@@ -162,10 +162,13 @@ class Browser:
             
             return self.prices[date.replace('/','')]
 
-    @feedback()
     def close(self):
-        self.driver.close()
-        self.driver.quit()
+        try:
+            self.driver.close()
+            self.driver.quit()
+        except:
+            pass
+            
 
 
 chrome_options=webdriver.ChromeOptions()
