@@ -2,8 +2,8 @@ from decorators import feedback
 from crawler import BCBApi
 from cache import cache_update, clear_table, get_cache_prices
 
-cache_update()
 
+cache_update()
 
 @feedback()
 def parse_date(date: str, p='dmy') -> str:
@@ -19,8 +19,10 @@ def get_lower_price(date, _cache:dict=None):
     def is_true_price_dolar(coin, dolar):
         diff = coin['paridadeCompra_BRL']/dolar['paridadeCompra_BRL'] 
         pDolar = 1/coin['paridadeCompra_USD']
+
         if abs(diff-pDolar)<0.0001:
             return pDolar
+
         else: 
             return coin['paridadeCompra_USD']
 
@@ -28,8 +30,8 @@ def get_lower_price(date, _cache:dict=None):
     
     _date = parse_date(date, 'dmy')
     _cache_prices = _cache if _cache else get_cache_prices()
+
     if  _cache_prices and _date in _cache_prices.keys() and 'ERROR' not in _cache_prices[_date].keys() :
-        
         coins = _cache_prices[_date] 
 
     else:
@@ -38,6 +40,7 @@ def get_lower_price(date, _cache:dict=None):
 
     try:
         Min = max([ coins[coin]['paridadeCompra_USD'] for coin in coins.keys()])
+
     except TypeError:
         Min=100
 
@@ -57,7 +60,6 @@ def get_lower_price(date, _cache:dict=None):
 
 def parse_prices(date, _cache=None):
     lower_price = get_lower_price(date,_cache=_cache)
-
 
     if len(lower_price.keys()) < 2:
         return lower_price['simbolo']

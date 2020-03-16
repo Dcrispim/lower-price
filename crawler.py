@@ -3,7 +3,6 @@ import requests
 from datetime import datetime
 from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
-from selenium.webdriver.support.select import Select
 from cache import cache_update, get_cache_prices, get_coin, get_name_by_simbol, set_coin
 import chromedriver_binary
 from decorators import feedback
@@ -26,6 +25,7 @@ def add_day(date:str, days):
 
 
 class Browser:
+
     def __init__(self, driver, options=None) -> None:
         self.driver=driver(chrome_options=options)
         self.options = options
@@ -36,9 +36,9 @@ class Browser:
         self._open_ = False
 
 
-
     def navigate(self):
         self.driver.get(self.url)
+
 
     @feedback()
     def set_date(self, date, _id='DATAINI'):
@@ -46,25 +46,34 @@ class Browser:
         self.DATE.clear()
         self.DATE.send_keys(date)
 
+
     @feedback()
     def CheckBoxSelect(self, _op='1'):
         options = self.driver.find_elements_by_id('RadOpcao')
+
         for op in options:
+
             if op.get_attribute('value') == _op:
                 op.click()
+
 
     @feedback()
     def get_coins(self):
         select = self.driver.find_element_by_name('ChkMoeda')
         options = select.find_elements_by_tag_name('option')
+
         for option in options:
+
             _code = option.get_attribute('value')
             _cache_coin = get_coin(_code)
+
             if _cache_coin:
                 self.coins[_code] = _cache_coin
+
             else:
                 self.coins[_code] = {'simbolo': None, 'name': option.text}
                 set_coin(_code, {'simbolo': None, 'name': option.text})
+
 
     @feedback()
     def submit(self):
@@ -85,6 +94,7 @@ class Browser:
             _resp = requests.get(link).text.strip().replace(',', '.')
 
             for line in _resp.split('\n'):
+
                 if line.split(';')[0] not in self.prices.keys():
                     self.prices[line.split(';')[0]] = {}
 
@@ -98,54 +108,67 @@ class Browser:
                     }
                                  
                 self.prices[line.split(';')[0]][line.split(';')[3]] = _price
+
             self.driver.back()  
+
         except NoSuchElementException:
-            self.prices[date_i.replace('/','')]={'ERROR':{
+
+            self.prices[date_i.replace('/','')]={
+                'ERROR':{
                     'simbolo': 'NULL', 
                     'paridadeCompra_USD': 1, 
                     'paridadeVenda_USD': 1, 
                     'paridadeCompra_BRL':1, 
                     'paridadeVenda_BRL': 1, 
                     'name': 'NOT DEFINED', 
-                    },
-                    'USD':{
+                },
+                'USD':{
                     'simbolo': 'NULL', 
                     'paridadeCompra_USD': 1, 
                     'paridadeVenda_USD': 1, 
                     'paridadeCompra_BRL':1, 
                     'paridadeVenda_BRL': 1, 
                     'name': 'NOT DEFINED', 
-                    }
-                    }
+                }
+            }
         
 
     @feedback()
     def get_simbols(self,date):
         i=0
         _clear = False
+
         for coin in self.coins.keys():
             response = {}
             response.update(self.coins[coin])
+
             if response['simbolo'] == None:
-                _clear =True
                 print(f'Reload cache of currency symbols: {100*(i/len(self.coins.keys())):2.2f}%')
+                
+                _clear =True
                 _resp = requests.get(self.make_link(
                     date, coin)).text.strip().replace(',', '.').split(';')
+                
                 if _resp[0] == date.replace('/', ''):
                     response.update({'simbolo': _resp[3]})
+                
                 else:
                     response.update({'simbolo': 'null'})
 
                 set_coin(coin, response)
+            
             i+=1
+        
         if _clear:
             os.system('clear')
                 
     @feedback()
     def make_dataset(self, date):
         _date = date.replace('/','').replace('-','')
+
         if date in self.prices.keys() and 'ERROR' not in self.prices[date].keys():
             return self.prices[date]
+
         else:
             self.get_coins()
             self.get_simbols(date)
@@ -153,8 +176,10 @@ class Browser:
             self.set_date(_date)
             self.submit()
             self.get_prices(_date)
+
             try:
                 del self.prices[date.replace('/','')]['XAU']
+
             except:
                 pass
             
@@ -164,8 +189,10 @@ class Browser:
 
     def close(self):
         try:
+
             self.driver.close()
             self.driver.quit()
+            
         except:
             pass
             

@@ -48,8 +48,10 @@ class test_crawler(TestCase):
             "paridadeVenda_BRL",
             "name",
         ]
+
         clean_date = parse_date(self.date, 'dmy')
         keys = BCBApi.prices[clean_date][list(BCBApi.prices[clean_date].keys())[0]].keys()
+        
         self.assertEqual(list(keys), response)
 
 class test_main(TestCase):
@@ -57,30 +59,30 @@ class test_main(TestCase):
         self.date = '20200310'
         self.BaseUrl = "https://ptax.bcb.gov.br/"
         self.cache = {
-                "expire": {
-                    "prices": 1584370559.542857,
-                    "coins": 1584370559.542866,
-                    "default": 1584370559.542868
+            "expire": {
+                "prices": 1584370559.542857,
+                "coins": 1584370559.542866,
+                "default": 1584370559.542868
                 },
-                "coins": {
-                    "1": {
-                        "simbolo": "AFN",
-                        "name": "AFEGANE AFEGANIST"
-                    },
-                    "2331": {
-                        "simbolo": "MGA",
-                        "name": "ARIARY MADAGASCAR"
-                    },
-                    "222": {
-                        "simbolo": "EUR",
-                        "name": "EURO"
-                    },
-                    "61": {
-                        "simbolo": "USD",
-                        "name": "DOLAR DOS EUA"
-                    },
+            "coins": {
+                "1": {
+                    "simbolo": "AFN",
+                    "name": "AFEGANE AFEGANIST"
                 },
-                "prices":{
+                "2331": {
+                    "simbolo": "MGA",
+                    "name": "ARIARY MADAGASCAR"
+                },
+                "222": {
+                    "simbolo": "EUR",
+                    "name": "EURO"
+                },
+                "61": {
+                    "simbolo": "USD",
+                    "name": "DOLAR DOS EUA"
+                },
+            },
+            "prices":{
                 "10032020": {
                     "USD": {
                         "simbolo": "USD",
@@ -117,7 +119,8 @@ class test_main(TestCase):
                     
                 }
             }
-}
+        }
+
     
     def test_parse_date(self):
         date = parse_date(self.date, 'd/m/y')
@@ -134,16 +137,19 @@ class test_main(TestCase):
                     "paridadeVenda_BRL": 0.001286,
                     "name": "ARIARY MADAGASCAR"
                 }
+
         self.assertDictEqual(lower_price,response)
 
     
     def test_parse_prices_cache(self):
         parsed_price = parse_prices(self.date, _cache=self.cache['prices'])
         response = 'MGA, ARIARY MADAGASCAR, 0.00027541'#'VES, BOLIVAR SOBERANO VENEZUELANO, 0.00001369'
+        
         self.assertEqual(parsed_price, response)
 
 
 
 
 if __name__ == "__main__":
+    
     unittest.main()
