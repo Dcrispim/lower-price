@@ -1,4 +1,4 @@
-## BREAFING
+## DESAFIO
 Obter a cotação da moeda a partir do site do Banco Central
 Você foi contratado como freelancer por uma empresa de análise de dados que precisa de uma solução para o seguinte problema:
 
