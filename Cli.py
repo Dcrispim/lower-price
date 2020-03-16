@@ -1,14 +1,58 @@
-from crawler import close_browser
+from cache import set_time_expire
 from main import *
 import os
 
 __DIRNAME__ = os.sys.path[0]
 
 class Cli:
+    
     def __init__(self):
         self._exclude = []
         self._args = {}
+        self.cmd_to = ''
 
+    
+    def get_price_from_dates(self, dates:list, to=''): 
+        for date in dates:
+             if 0<len(date)<8 and  date[0]!='-':  
+                print(f'Data: {date} em formato incorreto')
+        lower_price = [parse_prices(_price.strip()) for _price in dates if len(_price)>=8]
+        responses ='\n'.join(lower_price).strip('\n')
+        if to:
+            file_path = to if to[0]=='/' else os.path.join(__DIRNAME__,to)
+            with open(file_path,'a') as resp_file:
+                save_resp = [
+                    f'{dates[i]}, {lower_price[i]}' for i in range(len(lower_price))
+                ]
+                resp_file.write('\n'.join(save_resp)+'\n')
+            
+            
+        return responses
+
+    def cmd__set_cache_time(self, arg:str, list_args, **kwargs):
+        time = False
+        field = 'default' if '-field' not in list_args.keys() else list_args['-field']
+        conversor = {
+            'D':86400,
+            'M':2592000,
+            'Y':94608000,
+            'h':3600,
+            'm':60,
+            's':1
+        }
+        
+        if arg[0] in ['D','M','Y','h','m','s']:
+            time = int(arg[1:])*conversor[arg[0]]
+        elif arg.isnumeric():
+            time = int(arg)
+
+        if time!=False:
+            set_time_expire(time, field)
+        
+
+
+
+    
     def cmd_loop(self, arg, list_args, **kwargs):
         work = True
         while work:
@@ -16,19 +60,33 @@ class Cli:
             if '-q' in input_date:
                 print('saindo...')
                 work = False
-            for date in input_date.split():
-                if len(date) >= 8:
-                    print(parse_prices(date))
+            
+            dates = [date for date in input_date.split()]
+            to = '' if '-to' not in list_args.keys() else list_args['-to']
+            print(self.get_price_from_dates(dates,to=to))
 
+
+    def cmd_from(self, arg, list_args, **kwargs):
+        file_path = arg if arg[0]=='/' else os.path.join(__DIRNAME__,arg)
+        with open(file_path,'r') as date_file:
+            to = '' if '-to' not in list_args.keys() else list_args['-to']
+            response = self.get_price_from_dates(
+                            date_file.read().split(),
+                            to=to
+                        )
+            
+            print(response)
 
     def cmd_tests(self, arg, list_args={}, **kwargs):
         os.system(f'python3 {os.path.join(__DIRNAME__,"tests.py")}')
 
+    
     def __default__(self, arg, list_args, **kargs):
         dates = [list_args[a] for a in list_args.keys() if type(a) == int]
-        lower_price = [parse_prices(_price) for _price in dates if len(_price)>=8]
-        print('\n'.join(lower_price).strip('\n'))
+        to = '' if '-to' not in list_args.keys() else list_args['-to']
+        print(self.get_price_from_dates(dates,to=to))
 
+    
     def parse_args(self, list_args:list):
         """get a list of args and convert do dict of all args and values
         """    
@@ -59,12 +117,14 @@ class Cli:
             elif list_args[i] not in self._exclude:
                 self._args[i] = list_args[i]
     
+    
     def cmd__help(self, arg:any, list_args:dict, **kwargs)->None:
         help = """"
         This Class help you to build a cli more easyer:
         """
         print(help)
 
+    
     def __get_cmds__(self)->dict:
         cmds = {}
         for method in self.__dir__():
@@ -73,9 +133,11 @@ class Cli:
 
         return cmds
 
+    
     def cmd__reload_simbols(self, arg:any, list_args:dict, **kwargs)->None:
         get_simbols()
         
+    
     def run_commands(self, **kwargs)->None:
         _cmd = self.__get_cmds__()
 
@@ -94,6 +156,7 @@ class Cli:
 
             return None
 
+    
     
     def listen_os(self,**kwargs):
         self.parse_args(os.sys.argv[1:])
